@@ -8,25 +8,10 @@ public class Passenger{
 	static HashMap<String,String> available_buses=new HashMap<>();
 	int b_id=0;
 	Connection con=Sql.getConnection();
-	public boolean search(String date,String src,String dest) {
-		try {
-			Statement stmt=con.createStatement();
-			ResultSet rs=stmt.executeQuery("select * from bus_info where src="+"'"+src+"'"+"and dest='"+dest+"' and date='"+date+"' and availability>0");
-			while(rs.next()) {
-				b_id=rs.getInt("bus_id");
-				available_buses.put(rs.getString("bus_name"), rs.getString("arrival_time"));
-			}
-			if(available_buses.size()>0)return true;
-		}
-		catch(Exception e) {
-			e.printStackTrace();
-		}
-		return false;
-	}
 	public boolean search(String date,String src,String dest,String opt) {
 		try {
 			Statement stmt=con.createStatement();
-			ResultSet rs=stmt.executeQuery("select * from bus_info where src="+"'"+src+"'"+"and dest='"+dest+"' and date='"+date+"' and availability>0 and class="+opt);
+			ResultSet rs=stmt.executeQuery("select * from bus_info where src="+"'"+src+"'"+"and dest='"+dest+"' and date='"+date+"' and availability>0 and class="+"'"+opt+"'");
 			while(rs.next()) {
 				b_id=rs.getInt("bus_id");
 				available_buses.put(rs.getString("bus_name"), rs.getString("arrival_time"));
@@ -46,7 +31,6 @@ public class Passenger{
 		String src=sc.nextLine();
 		System.out.println("Enter the destination point:");
 		String dest=sc.nextLine();
-		if(search(date,src,dest)) {
 			System.out.println("Filter buses based on classes:");
 			System.out.println("1.AC ClASS");
 			System.out.println("2.SLEEPER CLASS");
@@ -65,8 +49,10 @@ public class Passenger{
 			}
 			else {
 				k=2;
-				System.out.println("No buses based on your selected class");			
+				System.out.println("No buses based on your selected class or date");			
 			}
+			boolean flag=true;
+			while(flag) {
 			switch(k) {
 			case 1:
 				ticket.book(username,b_id,available_buses);
@@ -74,13 +60,10 @@ public class Passenger{
 				break;
 			default:
 				System.out.println("Cancelling the process");
-				System.exit(0);
+				flag=false;
 				break;
 			}
-		}
-		else {
-			System.out.println("No buses are available on that date");
-		}
+			}
 	}
 	public void view(String username)
 	{
